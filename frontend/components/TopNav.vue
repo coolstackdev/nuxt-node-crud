@@ -60,11 +60,6 @@ export default {
       toggleMenu: false,
     }
   },
-  methods: {
-    toggle() {
-      this.toggleMenu = !this.toggleMenu
-    },
-  },
   computed: {
     isMobile() {
       return document.documentElement.clientWidth < 769
@@ -75,6 +70,11 @@ export default {
       }
 
       return this.toggleMenu
+    },
+  },
+  methods: {
+    toggle() {
+      this.toggleMenu = !this.toggleMenu
     },
   },
 }
