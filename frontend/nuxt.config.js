@@ -1,9 +1,13 @@
+require("dotenv").config()
 export default {
   /*
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
    */
   mode: "spa",
+  env: {
+    API_BASE_URL: process.env.API_BASE_URL,
+  },
   /*
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
@@ -63,7 +67,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    proxy: true,
+    baseURL: process.env.API_BASE_URL,
   },
   auth: {
     autoLogout: true,
@@ -81,44 +85,23 @@ export default {
     },
     strategies: {
       local: {
-        _scheme: "refresh",
-        token: {
-          maxAge: 30,
-          property: "data.token",
-        },
-        refreshToken: {
-          maxAge: 7200,
-          property: "data.token",
-        },
-        user: "data",
         endpoints: {
           login: {
-            url: "/api/auth/login",
+            url: "/api/v1/auth/login",
             method: "post",
-          },
-          register: {
-            url: "/api/auth/register",
-            method: "post",
+            propertyName: "token.accessToken",
           },
           logout: {
-            url: "/api/auth/logout",
+            url: "/api/v1/auth/logout",
             method: "get",
           },
           user: {
-            url: "/api/user",
+            url: "/api/v1/users/me",
             method: "get",
+            propertyName: "user",
           },
         },
       },
-    },
-  },
-  proxy: {
-    "/api": {
-      target: `${process.env.API_BASE_URL}/api`,
-      pathRewrite: {
-        "^/api": "",
-      },
-      secure: false,
     },
   },
   /*

@@ -28,7 +28,6 @@ exports.get = (req, res) => res.json(req.locals.timezone.transform());
  * @public
  */
 exports.create = async (req, res, next) => {
-  console.log('inside create');
   try {
     const timezone = new Timezone(req.body);
     timezone.user = req.user;

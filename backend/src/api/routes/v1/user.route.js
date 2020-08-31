@@ -22,6 +22,11 @@ router
   .get(authorize(ADMIN, MANAGER), validate(listUsers), controller.list)
   .post(authorize(ADMIN, MANAGER), validate(createUser), controller.create);
 
+// /users/me - Returns currently loggedIn user
+router
+  .route('/me')
+  .get(authorize(), controller.loggedIn)
+
 // /users/profile - Returns the information of loggedin user or update it.
 router
   .route('/profile')

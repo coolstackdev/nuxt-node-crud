@@ -3,6 +3,8 @@ module.exports = {
   env: {
     browser: true,
     node: true,
+    jasmine: true,
+    jest: true,
   },
   parserOptions: {
     parser: "babel-eslint",
@@ -22,5 +24,17 @@ module.exports = {
     "no-console": "off",
     "vue/max-attributes-per-line": "off",
     "prettier/prettier": ["error", { semi: false }],
+    "vue/singleline-html-element-content-newline": "off",
+    "vue/multiline-html-element-content-newline": "off",
+    "vue/html-self-closing": [
+      "error",
+      {
+        html: {
+          void: "always",
+          normal: "never",
+          component: "any",
+        },
+      },
+    ],
   },
 }

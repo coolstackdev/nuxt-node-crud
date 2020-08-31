@@ -34,7 +34,7 @@
       </button>
     </div>
     <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-      <div class="text-sm lg:flex-grow" />
+      <div class="text-sm lg:flex-grow"></div>
       <div v-if="showMenu">
         <nuxt-link
           to="/auth/login"

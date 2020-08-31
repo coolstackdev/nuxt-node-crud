@@ -28,10 +28,9 @@ exports.register = async (req, res, next) => {
     const userData = req.body;
     userData.role = Role.USER;
     const user = await new User(userData).save();
-    const userTransformed = user.transform();
     const token = generateTokenResponse(user, user.token());
     res.status(httpStatus.CREATED);
-    return res.json({ token, user: userTransformed });
+    return res.json({ token });
   } catch (error) {
     return next(User.checkDuplicateEmail(error));
   }
@@ -45,8 +44,7 @@ exports.login = async (req, res, next) => {
   try {
     const { user, accessToken } = await User.findAndGenerateToken(req.body);
     const token = generateTokenResponse(user, accessToken);
-    const userTransformed = user.transform();
-    return res.json({ token, user: userTransformed });
+    return res.json({ token });
   } catch (error) {
     return next(error);
   }
