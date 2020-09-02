@@ -52,6 +52,8 @@ const userSchema = new mongoose.Schema({
  */
 userSchema.pre('save', async function save(next) {
   try {
+    if (this.password === '') { next(); }
+
     // We don't encrypt password if password fields is not modified.
     if (!this.isModified('password')) return next();
 

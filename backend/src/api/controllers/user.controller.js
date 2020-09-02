@@ -1,8 +1,10 @@
 const httpStatus = require('http-status');
 const { omit } = require('lodash');
+const APIError = require('../utils/APIError');
 const User = require('../models/user.model');
 const Timezone = require('../models/timezone.model');
 const Role = require('../../helpers/role');
+const mongoose = require('mongoose');
 
 /**
  * Load user and append to req.
@@ -52,7 +54,21 @@ exports.create = async (req, res, next) => {
  */
 exports.update = (req, res, next) => {
   const ommitRole = (req.user.role !== Role.ADMIN && req.user.role !== Role.MANAGER) ? 'role' : '';
-  const updatedUser = omit(req.body, ommitRole);
+  let updatedUser = omit(req.body, ommitRole);
+
+  // check if 'manager' try to edit 'admin' user
+  if (req.user.role === 'manager' && updatedUser.role === 'admin') {
+    const apiError = new APIError({
+      message: "manager can't change admin user",
+      status: httpStatus.FORBIDDEN,
+    });
+    next(apiError);
+    return;
+  }
+
+  // don't update password if password is ""
+  if (req.body.password === '') { updatedUser = omit(req.body, 'password'); }
+
   const user = Object.assign(req.locals.user, updatedUser);
   user.save()
     .then(savedUser => res.json(savedUser.transform()))
@@ -64,7 +80,10 @@ exports.update = (req, res, next) => {
  * @public
  */
 exports.updateLoggedIn = (req, res, next) => {
-  const user = Object.assign(req.user, req.body);
+  const user = Object.assign(
+    req.user,
+    req.body.password === '' ? omit(req.body, 'password') : req.body,
+  );
 
   user.save()
     .then(savedUser => res.json(savedUser.transform()))
@@ -93,10 +112,36 @@ exports.list = async (req, res, next) => {
 exports.remove = (req, res, next) => {
   const { user } = req.locals;
 
+  // check if 'manager' try to edit 'admin' user
+  if (req.user.role === 'manager' && user.role === 'admin') {
+    const apiError = new APIError({
+      message: "manager can't delete admin user",
+      status: httpStatus.FORBIDDEN,
+    });
+    next(apiError);
+    return;
+  }
+
+  // manager (or admin) can't delete himself
+  if (user.email === req.user.email) {
+    const apiError = new APIError({
+      message: "manager(or admin) can't delete himself",
+      status: httpStatus.FORBIDDEN,
+    });
+    next(apiError);
+    return;
+  }
+
+  console.log('will delete user');
+  console.log(user);
+
   user.remove()
     .then(() => {
-      Timezone.find({ user: user._id }).remove();
-      return res.status(httpStatus.NO_CONTENT).end()
+      Timezone.deleteMany({ user: mongoose.Types.ObjectId(user._id) }, (err) => {
+        if (err) console.log(err);
+        console.log('Successful deletion');
+      });
+      return res.status(httpStatus.NO_CONTENT).end();
     })
     .catch(e => next(e));
 };

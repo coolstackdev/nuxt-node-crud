@@ -66,6 +66,7 @@ export default {
         await this.$auth.login({ data: this.form })
         this.$router.push("/timezones")
       } catch (e) {
+        console.log(e)
         this.$swal({
           position: "top-end",
           icon: "error",

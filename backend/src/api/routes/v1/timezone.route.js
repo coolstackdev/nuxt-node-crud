@@ -1,7 +1,9 @@
 const express = require('express');
+const validate = require('express-validation');
 const controller = require('../../controllers/timezone.controller');
 const { authorize } = require('../../middlewares/auth');
 const { ADMIN } = require('../../../helpers/role');
+const { timezone } = require('../../validations/timezone.validation');
 
 const router = express.Router();
 
@@ -20,13 +22,13 @@ router
 router
   .route('/')
   .get(authorize(ADMIN), controller.list)
-  .post(authorize(), controller.create);
+  .post(authorize(), validate(timezone), controller.create);
 
 // /timezones/:timezoneId - Returns a timezone or modify or delete the timezone
 router
   .route('/:timezoneId')
   .get(authorize(), controller.get)
-  .put(authorize(), controller.update)
+  .put(authorize(), validate(timezone), controller.update)
   .delete(authorize(), controller.remove);
 
 

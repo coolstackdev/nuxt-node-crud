@@ -29,11 +29,10 @@
         <div class="mb-4">
           <TextField
             v-model="form.differenceToGMT"
-            rules="required|integer|timezone_difference"
+            rules="required|timezone_difference"
             name="differenceToGMT"
             label="Different To GMT"
             placeholder="-4"
-            type="number"
           />
         </div>
         <div class="flex items-center justify-between">

@@ -37,8 +37,8 @@
         <div class="mb-6">
           <TextField
             v-model="form.password"
+            rules="min:6"
             vid="password"
-            rules="required|min:6"
             name="password"
             type="password"
             label="Password"
@@ -48,7 +48,11 @@
         <div class="mb-6">
           <TextField
             v-model="form.confirm"
-            rules="required|confirmed:password"
+            :rules="
+              !!form.password
+                ? 'required|confirmed:password'
+                : 'confirmed:password'
+            "
             name="confirm"
             type="password"
             label="Confirm Password"

@@ -25,7 +25,7 @@ router
 // /users/me - Returns currently loggedIn user
 router
   .route('/me')
-  .get(authorize(), controller.loggedIn)
+  .get(authorize(), controller.loggedIn);
 
 // /users/profile - Returns the information of loggedin user or update it.
 router

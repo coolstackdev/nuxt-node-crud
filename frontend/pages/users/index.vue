@@ -3,8 +3,8 @@
     <div class="flex w-full mb-4">
       <TextField v-model="search" placeholder="Search..." class="w-40" />
       <Button
-        icon="document-add"
-        text="Add"
+        icon="user-add"
+        text="Add User"
         class="ml-auto"
         primary
         medium
@@ -15,7 +15,7 @@
       <div v-if="users && users.length">
         <table class="table-auto w-full">
           <thead>
-            <tr>
+            <tr class="text-left">
               <th class="border px-4 py-2">#</th>
               <th class="border px-4 py-2">Full Name</th>
               <th class="border px-4 py-2">Email</th>
@@ -136,7 +136,7 @@ export default {
               timer: 2000,
             })
 
-            this.$router.push("/users")
+            this.$store.dispatch("getUsers")
           } catch (err) {
             console.log(err)
           }

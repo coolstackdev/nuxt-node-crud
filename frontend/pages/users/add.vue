@@ -38,7 +38,7 @@
           <TextField
             v-model="form.password"
             vid="password"
-            rules="required"
+            rules="required|min:6"
             name="password"
             type="password"
             label="Password"
@@ -114,7 +114,14 @@ export default {
         this.$store.commit("setSearch", "")
         this.$router.push("/users")
       } catch (err) {
-        console.log(err)
+        this.$swal({
+          position: "top-end",
+          icon: "error",
+          title: err.response.data.message,
+          showConfirmButton: false,
+          toast: true,
+          timer: 2000,
+        })
       }
     },
   },

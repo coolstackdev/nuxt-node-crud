@@ -29,10 +29,9 @@
         <div class="mb-4">
           <TextField
             v-model="form.differenceToGMT"
-            rules="required|integer|timezone_difference"
+            rules="required|timezone_difference"
             name="differenceToGMT"
             label="Different To GMT"
-            type="number"
             placeholder="-4"
           />
         </div>
@@ -89,7 +88,14 @@ export default {
         this.$store.commit("setSearch", "")
         this.$router.push("/timezones")
       } catch (err) {
-        console.log(err)
+        this.$swal({
+          position: "top-end",
+          icon: "error",
+          title: err.response.data.message,
+          showConfirmButton: false,
+          toast: true,
+          timer: 2000,
+        })
       }
     },
   },

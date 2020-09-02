@@ -4,7 +4,7 @@
       <TextField v-model="search" placeholder="Search..." class="w-40" />
       <Button
         icon="document-add"
-        text="Add"
+        text="Add Timezone"
         class="ml-auto"
         primary
         medium
@@ -15,12 +15,14 @@
       <div v-if="timezones && timezones.length">
         <table class="table-auto w-full">
           <thead>
-            <tr>
+            <tr class="text-left">
               <th class="border px-4 py-2">#</th>
               <th class="border px-4 py-2">Name</th>
               <th class="border px-4 py-2">City</th>
               <th class="border px-4 py-2">Current Time</th>
-              <th class="border px-4 py-2">Time difference(hours)</th>
+              <th class="border px-4 py-2">
+                Time difference to local time(hours)
+              </th>
               <th class="border px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -69,14 +71,12 @@
     <div v-else class="w-full justify-center pt-10">Loading...</div>
   </div>
 </template>
-
 <script>
 import { mapState } from "vuex"
 import moment from "moment"
 import Button from "@/components/Button"
 import TextField from "@/components/TextField"
 import Pagination from "@/components/Pagination"
-
 export default {
   middleware: "auth",
   components: {
@@ -113,7 +113,6 @@ export default {
   },
   mounted() {
     this.$store.dispatch("getTimezones")
-
     setInterval(() => {
       this.updateTimes()
     }, 1000)
@@ -142,8 +141,7 @@ export default {
               toast: true,
               timer: 2000,
             })
-
-            this.$router.push("/timezones")
+            this.$store.dispatch("getTimezones")
           } catch (err) {
             console.log(err)
           }
@@ -157,15 +155,15 @@ export default {
     },
     updateTimes() {
       if (this.timezones && this.timezones.length) {
+        const localDiff = new Date().getTimezoneOffset() / 60
         this.arrTimes = []
         this.timezones.forEach((element) => {
           const timezoneTime = moment()
             .utc()
             .add(element.differenceToGMT, "hours")
-          const localTime = moment().local().format("YYYY-MM-DD, h:mm:ss a")
           this.arrTimes.push([
             timezoneTime.format("YYYY-MM-DD, h:mm:ss a"),
-            timezoneTime.diff(moment(localTime), "hours", true),
+            element.differenceToGMT + localDiff,
           ])
         })
       }
@@ -173,5 +171,4 @@ export default {
   },
 }
 </script>
-
 <style></style>

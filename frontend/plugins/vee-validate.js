@@ -63,8 +63,12 @@ export default () => {
   })
   extend("timezone_difference", {
     validate: (value) => {
-      return parseInt(value) >= -12 && parseInt(value) <= 12
+      const exp = new RegExp(/^[-+]?[0-9]{1,2}(\.5)?$/)
+      return (
+        parseFloat(value) >= -12 && parseFloat(value) <= 12 && exp.test(value)
+      )
     },
-    message: "This field must be between -12 and 12",
+    message:
+      "Timezone difference should be between -12 and 12. (e.g. -4 or 7 or 5.5)",
   })
 }

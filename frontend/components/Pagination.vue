@@ -22,7 +22,7 @@
       </div>
       <div class="ml-10 flex text-sm leading-5 text-gray-700 items-center">
         <span class="mr-2">Rows per page: </span>
-        <select v-model="rowsPerPage" class="px-2 py-1">
+        <select v-model="rowsPerPage" class="px-2 py-1 bg-white border">
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="20">20</option>
