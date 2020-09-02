@@ -1,52 +1,54 @@
 <template>
   <div class="w-full flex justify-center pt-10 md:pt-20">
     <div class="w-full max-w-xs">
-      <form
+      <validation-observer
+        ref="observer"
+        v-slot="{ invalid }"
+        tag="form"
         class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
         @submit.prevent="login"
       >
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-            Email
-          </label>
-          <input
-            id="email"
+        <div class="mb-6">
+          <TextField
             v-model="form.email"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="text"
+            vid="email"
+            rules="required|email"
+            name="email"
+            type="email"
+            label="Email"
             placeholder="john@doe.com"
           />
         </div>
         <div class="mb-6">
-          <label
-            class="block text-gray-700 text-sm font-bold mb-2"
-            for="password"
-          >
-            Password
-          </label>
-          <input
-            id="password"
+          <TextField
             v-model="form.password"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+            rules="required"
+            name="password"
             type="password"
-            placeholder="******************"
+            label="Password"
+            placeholder="*********"
           />
         </div>
         <div class="flex items-center justify-between">
-          <button
-            class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          <Button
+            :disabled="invalid"
+            text="Log In"
+            primary
+            medium
             type="submit"
-          >
-            Log In
-          </button>
+          />
         </div>
-      </form>
+      </validation-observer>
     </div>
   </div>
 </template>
 
 <script>
+import Button from "@/components/Button"
 export default {
+  components: {
+    Button,
+  },
   data() {
     return {
       form: {
@@ -57,11 +59,21 @@ export default {
   },
   methods: {
     async login() {
+      const isValid = await this.$refs.observer.validate()
+      if (!isValid) return
+
       try {
         await this.$auth.login({ data: this.form })
-        this.$router.push("/")
+        this.$router.push("/timezones")
       } catch (e) {
-        console.log(e)
+        this.$swal({
+          position: "top-end",
+          icon: "error",
+          title: e.response.data.message,
+          showConfirmButton: false,
+          toast: true,
+          timer: 2000,
+        })
       }
     },
   },

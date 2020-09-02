@@ -26,6 +26,7 @@ module.exports = {
     "prettier/prettier": ["error", { semi: false }],
     "vue/singleline-html-element-content-newline": "off",
     "vue/multiline-html-element-content-newline": "off",
+    "vue/no-v-html": "off",
     "vue/html-self-closing": [
       "error",
       {

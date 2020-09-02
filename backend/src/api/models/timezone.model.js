@@ -18,7 +18,7 @@ const timezoneSchema = new mongoose.Schema({
     require: true,
   },
   differenceToGMT: {
-    type: String,
+    type: Number,
     require: true,
   },
   user: {
@@ -96,18 +96,17 @@ timezoneSchema.statics = {
    * @returns {Promise<User[]>}
    */
   async list({
-    page = 1, perPage = 10, keyword, userId,
+    page = 1, perPage = 5, search, userId,
   }) {
     const match = omitBy({ 'user.id': userId }, isNil);
-
-    // Configure match in order to find timezoneName or cityName by keyword
-    if (keyword) {
+    // Configure match in order to find timezoneName or cityName by search
+    if (search) {
       match.$or = [
         {
-          name: RegExp(keyword, 'i'),
+          name: RegExp(search, 'i'),
         },
         {
-          city: RegExp(keyword, 'i'),
+          city: RegExp(search, 'i'),
         },
       ];
     }
@@ -141,10 +140,10 @@ timezoneSchema.statics = {
           $match: match,
         },
         { $sort: { startdate: 1, createdAt: 1 } },
-        { $skip: perPage * (page - 1) },
+        { $skip: parseInt(perPage) * (parseInt(page) - 1) },
       ];
-      if (perPage > 0) {
-        aggregate.push({ $limit: perPage });
+      if (parseInt(perPage) > 0) {
+        aggregate.push({ $limit: parseInt(perPage) });
       }
 
       const timezones = await this.aggregate(aggregate);
@@ -158,7 +157,7 @@ timezoneSchema.statics = {
       const total = await this.countDocuments(match).exec();
 
       return {
-        timezones, total, page, totalPages: Math.ceil(total / perPage),
+        timezones, total, page, totalPages: Math.ceil(total / parseInt(perPage)),
       };
     } catch (error) {
       throw error;

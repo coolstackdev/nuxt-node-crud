@@ -5,15 +5,15 @@
         ref="observer"
         v-slot="{ invalid }"
         tag="form"
-        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-        @submit.prevent="register"
+        class="bg-white shadow-md px-8 pt-6 pb-8 mb-4"
+        @submit.prevent="create"
       >
         <div class="mb-4">
           <TextField
             v-model="form.name"
             rules="required"
             name="name"
-            label="Full name"
+            label="Full Name"
             placeholder="John Doe"
           />
         </div>
@@ -26,11 +26,19 @@
             placeholder="john@doe.com"
           />
         </div>
+        <div class="mb-4">
+          <InputSelect
+            v-model="form.role"
+            name="role"
+            label="Role"
+            :options="roles"
+          />
+        </div>
         <div class="mb-6">
           <TextField
             v-model="form.password"
             vid="password"
-            rules="required|min:6"
+            rules="required"
             name="password"
             type="password"
             label="Password"
@@ -50,7 +58,7 @@
         <div class="flex items-center justify-between">
           <Button
             :disabled="invalid"
-            text="Register"
+            text="Create"
             primary
             medium
             type="submit"
@@ -63,45 +71,50 @@
 
 <script>
 import Button from "@/components/Button"
+import TextField from "@/components/TextField"
+
 export default {
+  middleware: "auth",
   components: {
     Button,
+    TextField,
   },
   data() {
     return {
       form: {
         name: "",
         email: "",
+        role: "user",
         password: "",
-        confirm: "",
+        comfirm: "",
       },
+      roles: ["user", "manager", "admin"],
     }
   },
+  mounted() {
+    if (this.$auth.user.role !== "admin") this.roles = ["user", "manager"]
+  },
   methods: {
-    async register() {
+    async create() {
       const isValid = await this.$refs.observer.validate()
       if (!isValid) return
 
       try {
-        await this.$axios.post("/api/v1/auth/register", this.form)
-        await this.$auth.login({ data: this.form })
-        this.$router.push("/timezones")
-      } catch (e) {
-        let errorMsg = ""
-        if (e.response.data.message === "Validation Error")
-          errorMsg = e.response.data.errors[0].messages[0]
-        else errorMsg = e.response.data.message
-
-        if (!errorMsg) errorMsg = "Unknown Error occurred"
-
+        await this.$store.dispatch("createUser", this.form)
         this.$swal({
           position: "top-end",
-          icon: "error",
-          title: errorMsg,
+          icon: "success",
+          title: "Successfully created",
           showConfirmButton: false,
           toast: true,
           timer: 2000,
         })
+
+        // clear search keyword from store
+        this.$store.commit("setSearch", "")
+        this.$router.push("/users")
+      } catch (err) {
+        console.log(err)
       }
     },
   },

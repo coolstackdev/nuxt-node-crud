@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { omit } = require('lodash');
 const User = require('../models/user.model');
+const Timezone = require('../models/timezone.model');
 const Role = require('../../helpers/role');
 
 /**
@@ -93,6 +94,9 @@ exports.remove = (req, res, next) => {
   const { user } = req.locals;
 
   user.remove()
-    .then(() => res.status(httpStatus.NO_CONTENT).end())
+    .then(() => {
+      Timezone.find({ user: user._id }).remove();
+      return res.status(httpStatus.NO_CONTENT).end()
+    })
     .catch(e => next(e));
 };

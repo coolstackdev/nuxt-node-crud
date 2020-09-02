@@ -38,7 +38,7 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [],
+  plugins: ["~/plugins/axios", "~/plugins/vee-validate", "~/plugins/moment"],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
@@ -61,6 +61,7 @@ export default {
     "@nuxtjs/axios",
     "@nuxtjs/auth",
     "@nuxtjs/dotenv",
+    "vue-sweetalert2/nuxt",
   ],
   /*
    ** Axios module configuration
@@ -91,15 +92,12 @@ export default {
             method: "post",
             propertyName: "token.accessToken",
           },
-          logout: {
-            url: "/api/v1/auth/logout",
-            method: "get",
-          },
           user: {
             url: "/api/v1/users/me",
             method: "get",
             propertyName: "user",
           },
+          logout: false,
         },
       },
     },
@@ -120,5 +118,8 @@ export default {
         })
       }
     },
+  },
+  loading: {
+    color: "#319795",
   },
 }

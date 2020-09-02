@@ -5,15 +5,15 @@
         ref="observer"
         v-slot="{ invalid }"
         tag="form"
-        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-        @submit.prevent="register"
+        class="bg-white shadow-md px-8 pt-6 pb-8 mb-4"
+        @submit.prevent="update"
       >
         <div class="mb-4">
           <TextField
             v-model="form.name"
             rules="required"
             name="name"
-            label="Full name"
+            label="Full Name"
             placeholder="John Doe"
           />
         </div>
@@ -24,6 +24,15 @@
             name="email"
             label="Email"
             placeholder="john@doe.com"
+          />
+        </div>
+        <div class="mb-4">
+          <TextField
+            v-model="form.role"
+            disabled
+            name="role"
+            label="Role"
+            placeholder="user"
           />
         </div>
         <div class="mb-6">
@@ -50,7 +59,7 @@
         <div class="flex items-center justify-between">
           <Button
             :disabled="invalid"
-            text="Register"
+            text="Update"
             primary
             medium
             type="submit"
@@ -64,28 +73,48 @@
 <script>
 import Button from "@/components/Button"
 export default {
+  middleware: "auth",
   components: {
     Button,
   },
   data() {
     return {
       form: {
+        id: "",
         name: "",
         email: "",
+        role: "",
         password: "",
         confirm: "",
       },
     }
   },
-  methods: {
-    async register() {
-      const isValid = await this.$refs.observer.validate()
-      if (!isValid) return
+  async mounted() {
+    const data = await this.$axios.$get(`/api/v1/users/profile`)
 
+    // set values
+    this.form.id = data.user.id
+    this.form.name = data.user.name
+    this.form.email = data.user.email
+    this.form.role = data.user.role
+  },
+  methods: {
+    async update() {
       try {
-        await this.$axios.post("/api/v1/auth/register", this.form)
-        await this.$auth.login({ data: this.form })
-        this.$router.push("/timezones")
+        await this.$store.dispatch("updateProfile", this.form)
+
+        this.$swal({
+          position: "top-end",
+          icon: "success",
+          title: "Successfully updated",
+          showConfirmButton: false,
+          toast: true,
+          timer: 2000,
+        })
+
+        // clear search keyword from store
+        this.$store.commit("setSearch", "")
+        this.$router.push("/users")
       } catch (e) {
         let errorMsg = ""
         if (e.response.data.message === "Validation Error")

@@ -179,21 +179,21 @@ userSchema.statics = {
    * @returns {Promise<User[]>}
    */
   async list({
-    page = 1, perPage = 10, keyword,
+    page = 1, perPage = 5, search,
   }) {
     const options = {};
 
-    // if keyword exists, find by name, email and role using keyword
-    if (keyword && keyword.length > 0) {
+    // if search exists, find by name, email and role using search
+    if (search && search.length > 0) {
       options.$or = [
         {
-          name: RegExp(keyword, 'i'),
+          name: RegExp(search, 'i'),
         },
         {
-          email: RegExp(keyword, 'i'),
+          email: RegExp(search, 'i'),
         },
         {
-          role: RegExp(keyword, 'i'),
+          role: RegExp(search, 'i'),
         },
       ];
     }
