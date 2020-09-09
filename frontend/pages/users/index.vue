@@ -100,6 +100,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch("getUsers")
+    this.search = this.$store.state.search
   },
   methods: {
     hasPermission(user) {

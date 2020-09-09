@@ -116,6 +116,7 @@ export default {
     setInterval(() => {
       this.updateTimes()
     }, 1000)
+    this.search = this.$store.state.search
   },
   methods: {
     deleteTimezone(id) {

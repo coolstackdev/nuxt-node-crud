@@ -28,7 +28,7 @@ router
 router
   .route('/:timezoneId')
   .get(authorize(), controller.get)
-  .put(authorize(), validate(timezone), controller.update)
+  .put(authorize(), controller.update)
   .delete(authorize(), controller.remove);
 
 
