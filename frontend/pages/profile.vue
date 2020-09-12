@@ -118,7 +118,6 @@ export default {
 
         // clear search keyword from store
         this.$store.commit("setSearch", "")
-        this.$router.push("/users")
       } catch (e) {
         let errorMsg = ""
         if (e.response.data.message === "Validation Error")
